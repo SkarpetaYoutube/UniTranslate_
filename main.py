@@ -17,6 +17,7 @@ class TranscriptionThread(QThread):
     """Osobny wątek żeby GUI się nie zawieszało"""
     finished = pyqtSignal(str, str)
     progress = pyqtSignal(str)
+    failed = pyqtSignal(str)
 
     def __init__(self, audio_path, source_lang, target_lang):
         super().__init__()
@@ -40,7 +41,7 @@ class TranscriptionThread(QThread):
             self.progress.emit("Gotowe!")
             self.finished.emit(source_text, translated_text)
         except Exception as e:
-            self.progress.emit(f"BŁĄD: {str(e)}")
+            self.failed.emit(str(e))
 
 
 class WhisperApp(QMainWindow):
@@ -199,6 +200,7 @@ class WhisperApp(QMainWindow):
         self.thread = TranscriptionThread(self.audio_file, source_lang, target_lang)
         self.thread.progress.connect(self.update_status)
         self.thread.finished.connect(self.transcription_finished)
+        self.thread.failed.connect(self.transcription_failed)
         self.thread.start()
 
     def update_status(self, message):
@@ -210,6 +212,11 @@ class WhisperApp(QMainWindow):
         self.btn_save.setEnabled(True)
 
         # Włącz przyciski z powrotem
+        self.btn_transcribe.setEnabled(True)
+        self.btn_select.setEnabled(True)
+
+    def transcription_failed(self, error_message):
+        self.label_status.setText(f'BŁĄD: {error_message}')
         self.btn_transcribe.setEnabled(True)
         self.btn_select.setEnabled(True)
 
