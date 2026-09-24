@@ -230,8 +230,3 @@ if __name__ == '__main__':
     window = WhisperApp()
     window.show()
     sys.exit(app.exec_())
-
-
-# Użycie
-audio_file = "ElevenLabs_2025-11-09T12_15_28_Alex - expressive narrator_gen_sp100_s50_sb75_se0_m2.mp3"
-polish = transcribe_and_translate(audio_file, "en", "pl")
