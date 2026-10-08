@@ -38,9 +38,12 @@ class TranscriptionThread(QThread):
                 self.failed.emit("Nie rozpoznano mowy w wybranym pliku audio.")
                 return
 
-            self.progress.emit("Tłumaczę tekst...")
-            translator = GoogleTranslator(source=self.source_lang, target=self.target_lang)
-            translated_text = translator.translate(source_text)
+            if self.source_lang == self.target_lang:
+                translated_text = source_text
+            else:
+                self.progress.emit("Tłumaczę tekst...")
+                translator = GoogleTranslator(source=self.source_lang, target=self.target_lang)
+                translated_text = translator.translate(source_text)
 
             self.progress.emit("Gotowe!")
             self.finished.emit(source_text, translated_text)
