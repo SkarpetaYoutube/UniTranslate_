@@ -230,12 +230,16 @@ class WhisperApp(QMainWindow):
     def save_to_file(self):
         file_path, _ = QFileDialog.getSaveFileName(self, "Zapisz jako", "tlumaczenie.txt", "Text Files (*.txt)")
         if file_path:
-            with open(file_path, "w", encoding="utf-8") as f:
-                f.write("TEKST ORYGINALNY:\n")
-                f.write(self.text_original.toPlainText() + "\n\n")
-                f.write("---\n\n")
-                f.write("TŁUMACZENIE:\n")
-                f.write(self.text_translated.toPlainText())
+            try:
+                with open(file_path, "w", encoding="utf-8") as f:
+                    f.write("TEKST ORYGINALNY:\n")
+                    f.write(self.text_original.toPlainText() + "\n\n")
+                    f.write("---\n\n")
+                    f.write("TŁUMACZENIE:\n")
+                    f.write(self.text_translated.toPlainText())
+            except OSError as error:
+                self.label_status.setText(f"BŁĄD ZAPISU: {error}")
+                return
             self.label_status.setText(f'✅ Zapisano: {os.path.basename(file_path)}')
 
 
