@@ -9,8 +9,9 @@ from PyQt5.QtCore import QThread, pyqtSignal
 from PyQt5.QtGui import QFont
 
 # Dodaj ffmpeg do PATH
-ffmpeg_path = os.path.join(os.getcwd(), "ffmpeg", "bin")
-os.environ["PATH"] += os.pathsep + ffmpeg_path
+ffmpeg_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ffmpeg", "bin")
+if os.path.isdir(ffmpeg_path):
+    os.environ["PATH"] = os.pathsep.join(filter(None, [os.environ.get("PATH", ""), ffmpeg_path]))
 
 
 class TranscriptionThread(QThread):
