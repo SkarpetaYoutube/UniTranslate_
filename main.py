@@ -33,7 +33,10 @@ class TranscriptionThread(QThread):
 
             self.progress.emit("Transkrybuję audio...")
             result = model.transcribe(self.audio_path, language=self.source_lang)
-            source_text = result["text"]
+            source_text = result["text"].strip()
+            if not source_text:
+                self.failed.emit("Nie rozpoznano mowy w wybranym pliku audio.")
+                return
 
             self.progress.emit("Tłumaczę tekst...")
             translator = GoogleTranslator(source=self.source_lang, target=self.target_lang)
