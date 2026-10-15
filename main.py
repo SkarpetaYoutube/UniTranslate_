@@ -227,6 +227,7 @@ class WhisperApp(QMainWindow):
         self.text_original.setPlainText(original)
         self.text_translated.setPlainText(translated)
         self.btn_save.setEnabled(True)
+        self.label_status.setText('✅ Transkrypcja i tłumaczenie zakończone')
 
         # Włącz przyciski z powrotem
         self.btn_transcribe.setEnabled(True)
