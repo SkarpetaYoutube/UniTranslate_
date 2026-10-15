@@ -22,3 +22,11 @@ Aplikacja obsługuje pliki MP3, WAV i M4A.
 
 - ✅ Działa w PyCharm
 - ❌ `.exe` nie działa jeszcze poprawnie z PyInstallerem
+
+## Rozwiązywanie problemów
+
+- **Brak polecenia `ffmpeg`**: zainstaluj FFmpeg i dodaj jego katalog `bin` do zmiennej `PATH`, ewentualnie umieść go w `ffmpeg/bin` w katalogu projektu. Uruchom ponownie aplikację.
+- **Pierwsze uruchomienie trwa długo**: Whisper przy pierwszym użyciu może pobierać model `base`; potrzebne jest połączenie z internetem.
+- **Błąd tłumaczenia**: usługa GoogleTranslator wymaga połączenia z internetem; sprawdź sieć i spróbuj ponownie.
+- **Brak rozpoznanej mowy**: sprawdź, czy plik zawiera wyraźną mowę w wybranym języku źródłowym.
+- **Brak obsługi GPU**: Whisper może działać na CPU, ale przetwarzanie będzie wolniejsze.
