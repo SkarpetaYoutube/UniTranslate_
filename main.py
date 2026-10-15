@@ -203,6 +203,12 @@ class WhisperApp(QMainWindow):
         source_lang = self.combo_source.currentText().split(' - ')[0]
         target_lang = self.combo_target.currentText().split(' - ')[0]
 
+        # Poprzednie wyniki nie powinny być dostępne podczas nowego zadania.
+        self.btn_save.setEnabled(False)
+        self.text_original.clear()
+        self.text_translated.clear()
+        self.label_status.setText('Rozpoczynam transkrypcję...')
+
         # Wyłącz przyciski
         self.btn_transcribe.setEnabled(False)
         self.btn_select.setEnabled(False)
