@@ -188,6 +188,10 @@ class WhisperApp(QMainWindow):
         file_path, _ = QFileDialog.getOpenFileName(self, "Wybierz plik audio", "", "Audio Files (*.mp3 *.wav *.m4a)")
         if file_path:
             self.audio_file = file_path
+            self.text_original.clear()
+            self.text_translated.clear()
+            self.btn_save.setEnabled(False)
+            self.label_status.setText('Gotowy do pracy')
             self.label_file.setText(f'✅ {os.path.basename(file_path)}')
             self.btn_transcribe.setEnabled(True)
 
