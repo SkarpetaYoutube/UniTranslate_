@@ -18,3 +18,17 @@ Thumbs.db
 *.mp3
 *.wav
 *.m4a
+
+# Test and tooling caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Local environment and build artifacts
+.env
+.env.*
+dist/
+build/
+*.spec
