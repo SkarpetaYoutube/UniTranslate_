@@ -30,3 +30,27 @@ Aplikacja obsługuje pliki MP3, WAV i M4A.
 - **Błąd tłumaczenia**: usługa GoogleTranslator wymaga połączenia z internetem; sprawdź sieć i spróbuj ponownie.
 - **Brak rozpoznanej mowy**: sprawdź, czy plik zawiera wyraźną mowę w wybranym języku źródłowym.
 - **Brak obsługi GPU**: Whisper może działać na CPU, ale przetwarzanie będzie wolniejsze.
+
+## Obsługa przetwarzania
+
+Przed rozpoczęciem aplikacja sprawdza istnienie wybranego pliku oraz dostępność
+FFmpeg. Długie transkrypcje są tłumaczone w fragmentach do 4500 znaków; jeśli
+to możliwe, podział wypada na spacji. Podział może ograniczyć kontekst tłumaczenia.
+Pusta odpowiedź usługi jest zgłaszana jako błąd.
+
+Podczas pracy wybór pliku i języków jest zablokowany. Okno można zamknąć po
+zakończeniu pracy wątku; próba wcześniejszego zamknięcia wyświetla komunikat.
+Aplikacja nie obsługuje anulowania trwającego zadania.
+
+## Testy regresji
+
+Z katalogu projektu uruchom:
+
+```bash
+python -m unittest discover -s tests -v
+```
+
+Testy korzystają wyłącznie z biblioteki standardowej Pythona. Sprawdzają
+dzielenie tekstu, błędne odpowiedzi usługi i logikę zamykania okna oraz
+przywracania kontrolek, bez pobierania modeli i wywoływania sieci.
+Nie zastępują testu integracyjnego GUI, FFmpeg i rzeczywistego tłumaczenia.
