@@ -15,6 +15,27 @@ if os.path.isdir(ffmpeg_path):
     os.environ["PATH"] = os.pathsep.join(filter(None, [os.environ.get("PATH", ""), ffmpeg_path]))
 
 
+def translate_text(text, translator, max_chars=4500):
+    """Translate bounded chunks without dropping characters between chunks."""
+    if max_chars < 1:
+        raise ValueError("max_chars must be positive")
+    translations = []
+    while text:
+        boundary = min(len(text), max_chars)
+        if len(text) > max_chars:
+            space = text.rfind(" ", 0, max_chars)
+            if space > 0:
+                boundary = space + 1
+        chunk, text = text[:boundary], text[boundary:]
+        if not chunk.strip():
+            continue
+        translated = translator.translate(chunk)
+        if not isinstance(translated, str) or not translated.strip():
+            raise ValueError("Usługa tłumaczenia zwróciła pusty wynik.")
+        translations.append(translated.strip())
+    return " ".join(translations)
+
+
 class TranscriptionThread(QThread):
     """Osobny wątek żeby GUI się nie zawieszało"""
     finished = pyqtSignal(str, str)
@@ -44,7 +65,7 @@ class TranscriptionThread(QThread):
             else:
                 self.progress.emit("Tłumaczę tekst...")
                 translator = GoogleTranslator(source=self.source_lang, target=self.target_lang)
-                translated_text = translator.translate(source_text)
+                translated_text = translate_text(source_text, translator)
 
             self.progress.emit("Gotowe!")
             self.finished.emit(source_text, translated_text)
