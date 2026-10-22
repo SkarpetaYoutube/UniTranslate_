@@ -1,5 +1,6 @@
 import os
 import sys
+import shutil
 import whisper
 from deep_translator import GoogleTranslator
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QPushButton,
@@ -197,6 +198,13 @@ class WhisperApp(QMainWindow):
 
     def start_transcription(self):
         if not self.audio_file:
+            return
+
+        if not os.path.isfile(self.audio_file):
+            self.label_status.setText('BŁĄD: Wybrany plik audio nie istnieje.')
+            return
+        if shutil.which("ffmpeg") is None:
+            self.label_status.setText('BŁĄD: Nie znaleziono FFmpeg w PATH.')
             return
 
         # Wyciągnij kod języka (np. "ar" z "ar - Arabski")
