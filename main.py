@@ -38,7 +38,7 @@ def translate_text(text, translator, max_chars=4500):
 
 class TranscriptionThread(QThread):
     """Osobny wątek żeby GUI się nie zawieszało"""
-    finished = pyqtSignal(str, str)
+    result_ready = pyqtSignal(str, str)
     progress = pyqtSignal(str)
     failed = pyqtSignal(str)
 
@@ -68,7 +68,7 @@ class TranscriptionThread(QThread):
                 translated_text = translate_text(source_text, translator)
 
             self.progress.emit("Gotowe!")
-            self.finished.emit(source_text, translated_text)
+            self.result_ready.emit(source_text, translated_text)
         except Exception as e:
             self.failed.emit(str(e))
 
@@ -77,6 +77,7 @@ class WhisperApp(QMainWindow):
     def __init__(self):
         super().__init__()
         self.audio_file = None
+        self.thread = None
         self.initUI()
 
     def initUI(self):
@@ -218,6 +219,8 @@ class WhisperApp(QMainWindow):
             self.btn_transcribe.setEnabled(True)
 
     def start_transcription(self):
+        if self.thread is not None and self.thread.isRunning():
+            return
         if not self.audio_file:
             return
 
@@ -241,11 +244,14 @@ class WhisperApp(QMainWindow):
         # Wyłącz przyciski
         self.btn_transcribe.setEnabled(False)
         self.btn_select.setEnabled(False)
+        self.combo_source.setEnabled(False)
+        self.combo_target.setEnabled(False)
 
         # Uruchom transkrypcję w osobnym wątku
         self.thread = TranscriptionThread(self.audio_file, source_lang, target_lang)
         self.thread.progress.connect(self.update_status)
-        self.thread.finished.connect(self.transcription_finished)
+        self.thread.result_ready.connect(self.transcription_finished)
+        self.thread.finished.connect(self.transcription_stopped)
         self.thread.failed.connect(self.transcription_failed)
         self.thread.start()
 
@@ -258,14 +264,21 @@ class WhisperApp(QMainWindow):
         self.btn_save.setEnabled(True)
         self.label_status.setText('✅ Transkrypcja i tłumaczenie zakończone')
 
-        # Włącz przyciski z powrotem
-        self.btn_transcribe.setEnabled(True)
-        self.btn_select.setEnabled(True)
-
     def transcription_failed(self, error_message):
         self.label_status.setText(f'BŁĄD: {error_message}')
+
+    def transcription_stopped(self):
         self.btn_transcribe.setEnabled(True)
         self.btn_select.setEnabled(True)
+        self.combo_source.setEnabled(True)
+        self.combo_target.setEnabled(True)
+
+    def closeEvent(self, event):
+        if self.thread is not None and self.thread.isRunning():
+            self.label_status.setText('Poczekaj na zakończenie przetwarzania przed zamknięciem.')
+            event.ignore()
+            return
+        event.accept()
 
     def save_to_file(self):
         file_path, _ = QFileDialog.getSaveFileName(self, "Zapisz jako", "tlumaczenie.txt", "Text Files (*.txt)")
